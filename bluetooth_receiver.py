@@ -31,11 +31,17 @@ readingThread = threading.Thread(target=readingThreadFunc, args=(client_sock,))
 
 readingThread.start()
 
-while True:
-        input_data = input()
-        if input_data == "stop":
-            break
-        input_data = "PC > " + input_data
-        client_sock.send(input_data.encode("utf-8"))
+try:
+    while True:
+            input_data = input()
+            if input_data == "stop":
+                client_sock.close()
+                print("Connection closed")
+                break
+            input_data = "PC > " + input_data
+            client_sock.send(input_data.encode("utf-8"))
+except:
+    client_sock.close()
+    print("Connection closed")
+     
 
-client_sock.close()
