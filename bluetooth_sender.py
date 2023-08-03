@@ -20,8 +20,13 @@ print("Accepted connection from", client_info)
 
 def readingThreadFunc(client_sock):
     while True:
-        text_data = client_sock.recv(1024)
-        print(text_data.decode("utf-8"))
+        try:
+            text_data = client_sock.recv(1024)
+            print(text_data.decode("utf-8"))
+        except:
+            client_sock.close()
+            server_sock.close()
+            print("Connection closed")
 
 # def sendingThreadFunc(client_sock):
 #     while True:
