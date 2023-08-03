@@ -1,10 +1,12 @@
 import socket
 
+local_bluetooth_addr = "E4:5F:01:AF:D7:8E"  # Replace with your local Bluetooth address
+
 server_sock = socket.socket(
     socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM
 )
 
-server_sock.bind(("", 1))
+server_sock.bind((local_bluetooth_addr, 1))
 server_sock.listen(1)
 
 print("Listening for connection on RFCOMM channel 1")
