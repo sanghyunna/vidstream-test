@@ -1,16 +1,40 @@
 import socket
+import threading
 
-target_bluetooth_addr = "E4:5F:01:AF:D7:8E"  # Replace with your server's Bluetooth address
+# Code for PC
+
+TARGET_BLUETOOTH_ADDRESS = "E4:5F:01:AF:D7:8E" # Rpi MAC address
+RFCOMM_PORT = 1
 
 client_sock = socket.socket(
     socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM
 )
 
-print("Attempting to connect to %s on RFCOMM channel 1" % target_bluetooth_addr)
-client_sock.connect((target_bluetooth_addr, 1))
-print("Connected. Receiving data...")
+print(f"Attempting to connect to {TARGET_BLUETOOTH_ADDRESS} on RFCOMM channel {RFCOMM_PORT}")
+client_sock.connect((TARGET_BLUETOOTH_ADDRESS, RFCOMM_PORT))
+print(f"Connected to {TARGET_BLUETOOTH_ADDRESS} on RFCOMM channel {RFCOMM_PORT}")
 
-text_data = client_sock.recv(1024)
-print("Received:", text_data.decode("utf-8"))
+def readingThreadFunc(client_sock):
+    while True:
+        text_data = client_sock.recv(1024)
+        print("Received > ", text_data.decode("utf-8"))
+
+# def sendingThreadFunc(client_sock):
+#     while True:
+#         input_data = input("Send > ")
+#         if input_data == "stop":
+#             break
+#         client_sock.send(input_data.encode("utf-8"))
+
+readingThread = threading.Thread(target=readingThreadFunc, args=(client_sock,))
+# sendingThread = threading.Thread(target=sendingThreadFunc, args=(client_sock,))
+
+readingThread.start()
+
+while True:
+        input_data = input("Send > ")
+        if input_data == "stop":
+            break
+        client_sock.send(input_data.encode("utf-8"))
 
 client_sock.close()

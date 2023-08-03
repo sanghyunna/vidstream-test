@@ -1,21 +1,45 @@
 import socket
+import threading
 
-local_bluetooth_addr = "E4:5F:01:AF:D7:8E"  # Replace with your local Bluetooth address
+# Code for Raspberry Pi
+
+LOCAL_BLUETOOTH_ADDRESS = "E4:5F:01:AF:D7:8E" # Rpi MAC address
+RFCOMM_PORT = 1
 
 server_sock = socket.socket(
     socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM
 )
 
-server_sock.bind((local_bluetooth_addr, 1))
+server_sock.bind((LOCAL_BLUETOOTH_ADDRESS, RFCOMM_PORT))
 server_sock.listen(1)
 
-print("Listening for connection on RFCOMM channel 1")
+print(f"Listening for connection on RFCOMM channel {RFCOMM_PORT}")
 
 client_sock, client_info = server_sock.accept()
 print("Accepted connection from", client_info)
 
-text_data = "Hello, Bluetooth!"
-client_sock.send(text_data.encode("utf-8"))
+def readingThreadFunc(client_sock):
+    while True:
+        text_data = client_sock.recv(1024)
+        print("Received > ", text_data.decode("utf-8"))
+
+# def sendingThreadFunc(client_sock):
+#     while True:
+#         input_data = input("Send > ")
+#         if input_data == "stop":
+#             break
+#         client_sock.send(input_data.encode("utf-8"))
+
+readingThread = threading.Thread(target=readingThreadFunc, args=(client_sock,))
+# sendingThread = threading.Thread(target=sendingThreadFunc, args=(client_sock,))
+
+readingThread.start()
+
+while True:
+        input_data = input("Send > ")
+        if input_data == "stop":
+            break
+        client_sock.send(input_data.encode("utf-8"))
 
 client_sock.close()
 server_sock.close()
