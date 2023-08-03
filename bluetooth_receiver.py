@@ -1,18 +1,16 @@
 import socket
 
-server_sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
+target_bluetooth_addr = "E4:5F:01:AF:D7:8E"  # Replace with your server's Bluetooth address
 
-port = 3
-server_sock.bind(("", port))
-server_sock.listen(1)
+client_sock = socket.socket(
+    socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM
+)
 
-print("Waiting for connection...")
+print("Attempting to connect to %s on RFCOMM channel 1" % target_bluetooth_addr)
+client_sock.connect((target_bluetooth_addr, 1))
+print("Connected. Receiving data...")
 
-client_sock, client_info = server_sock.accept()
-print("Accepted connection from", client_info)
-
-data = client_sock.recv(1024)  # Adjust buffer size as needed
-print(f"Received: {data.decode()}")
+text_data = client_sock.recv(1024)
+print("Received:", text_data.decode("utf-8"))
 
 client_sock.close()
-server_sock.close()
