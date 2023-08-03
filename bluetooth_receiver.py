@@ -17,7 +17,7 @@ print(f"Connected to {TARGET_BLUETOOTH_ADDRESS} on RFCOMM channel {RFCOMM_PORT}"
 def readingThreadFunc(client_sock):
     while True:
         text_data = client_sock.recv(1024)
-        print("Received > ", text_data.decode("utf-8"))
+        print(text_data.decode("utf-8"))
 
 # def sendingThreadFunc(client_sock):
 #     while True:
