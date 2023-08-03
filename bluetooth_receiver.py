@@ -22,6 +22,7 @@ def readingThreadFunc(client_sock):
         except:
             client_sock.close()
             print("Connection closed")
+            break
 
 # def sendingThreadFunc(client_sock):
 #     while True:
