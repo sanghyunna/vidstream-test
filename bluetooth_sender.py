@@ -5,6 +5,7 @@ import threading
 
 LOCAL_BLUETOOTH_ADDRESS = "E4:5F:01:AF:D7:8E" # Rpi MAC address
 RFCOMM_PORT = 1
+SOCKET_IS_RUNNING = False
 
 server_sock = socket.socket(
     socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM
@@ -17,9 +18,10 @@ print(f"Listening for connection on RFCOMM channel {RFCOMM_PORT}")
 
 client_sock, client_info = server_sock.accept()
 print("Accepted connection from", client_info)
+SOCKET_IS_RUNNING = True
 
 def readingThreadFunc(client_sock):
-    while True:
+    while SOCKET_IS_RUNNING:
         try:
             text_data = client_sock.recv(1024)
             print(text_data.decode("utf-8"))
@@ -42,16 +44,17 @@ readingThread = threading.Thread(target=readingThreadFunc, args=(client_sock,))
 readingThread.start()
 
 try:
-    while True:
-            input_data = input()
-            if input_data == "stop":
-                client_sock.close()
-                server_sock.close()
-                print("Connection closed")
-                break
-            input_data = "Raspi > " + input_data
-            client_sock.send(input_data.encode("utf-8"))
+    while SOCKET_IS_RUNNING:
+        input_data = input()
+        if input_data == "stop":
+            SOCKET_IS_RUNNING = False
+            client_sock.close()
+            server_sock.close()
+            print("Connection closed")
+            break
+        input_data = "Raspi > " + input_data
+        client_sock.send(input_data.encode("utf-8"))
 except:
     client_sock.close()
     server_sock.close()
-    print("Connection closed")
+    print("Exception : Connection closed")
