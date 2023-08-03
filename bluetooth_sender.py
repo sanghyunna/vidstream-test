@@ -36,9 +36,10 @@ readingThread = threading.Thread(target=readingThreadFunc, args=(client_sock,))
 readingThread.start()
 
 while True:
-        input_data = input("Send > ")
+        input_data = input()
         if input_data == "stop":
             break
+        input_data = "Raspi > " + input_data
         client_sock.send(input_data.encode("utf-8"))
 
 client_sock.close()
