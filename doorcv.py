@@ -34,7 +34,7 @@ while True:
     contours, hierarchy = cv2.findContours(imgcopy, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
     # contour 그리기
-    cv2.drawContours(imgcopy, contours, -1, (0, 255, 0), 3)
+    # cv2.drawContours(imgcopy, contours, -1, (0, 255, 0), 3)
 
     # 출력
     cv2.imshow('image', imgcopy)
